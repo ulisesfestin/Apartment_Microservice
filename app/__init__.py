@@ -1,31 +1,23 @@
 from flask import Flask
-# from flask_migrate import Migrate
-# from flask_cors import CORS
-# from app.config.database import db, FULL_URL_DB
-# from flask_marshmallow import Marshmallow
+import os
+from app.config import config
+from flask_sqlalchemy import SQLAlchemy
 
-
-# ma = Marshmallow()
+db = SQLAlchemy()
 
 def create_app():
     app = Flask(__name__)
-    # CORS(app)
-    # ma.init_app(app)
 
-    # app.config['SQLALCHEMY_DATABASE_URI'] = FULL_URL_DB
+    config_name = os.getenv('FLASK_ENV')
+      
+    f = config.factory(config_name if config_name else 'development')
+    app.config.from_object(f)
 
-    # app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    f.init_app(app)
+    db.init_app(app)
 
-    # db.init_app(app)
-
-    # migrate = Migrate()
-    # migrate.init_app(app, db)
-
-    # from app.resources import home, user, role, apartment, booking, auth
-    # app.register_blueprint(home, url_prefix='/api/v1/home')
-    # app.register_blueprint(user, url_prefix='/api/v1/user')
-    # app.register_blueprint(apartment, url_prefix='/api/v1/apartment')
-    # app.register_blueprint(role, url_prefix='/api/v1/role')
-    # app.register_blueprint(booking, url_prefix='/api/v1/booking')
-    # app.register_blueprint(auth, url_prefix='/api/v1/auth')
+    @app.shell_context_processor
+    def ctx():
+        return {"app": app, "db": db}
+    
     return app
