@@ -16,6 +16,9 @@ def create_app():
     f.init_app(app)
     db.init_app(app)
 
+    from app.controllers import apartment
+    app.register_blueprint(apartment, url_prefix='/api/v1/apartment')
+
     @app.shell_context_processor
     def ctx():
         return {"app": app, "db": db}

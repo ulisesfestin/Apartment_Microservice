@@ -1,0 +1,1 @@
+from .apartment_repository import ApartmentRepository
