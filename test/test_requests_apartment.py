@@ -1,5 +1,5 @@
 import unittest
-from app import create_app, db
+from app import create_app, db, cache
 import requests
 
 
@@ -9,10 +9,12 @@ class TestRequestsApartment(unittest.TestCase):
         self.app_context = self.app.app_context()
         self.app_context.push()
         db.create_all()
+        cache.init_app(self.app, config={'CACHE_TYPE': 'RedisCache', 'CACHE_DEFAULT_TIMEOUT': 300, 'CACHE_REDIS_HOST': 'localhost', 'CACHE_REDIS_PORT': '6379', 'CACHE_REDIS_DB': '0', 'CACHE_REDIS_PASSWORD': '12345', 'CACHE_KEY_PREFIX': 'apartment_'})
     
     def tearDown(self):
         db.session.remove()
         db.drop_all()
+        cache.clear()
         self.app_context.pop()
     
     def create_apartment(self):
